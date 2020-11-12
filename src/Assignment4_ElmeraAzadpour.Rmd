@@ -1,0 +1,18 @@
+---
+title: "Assignment4_EA"
+author: "Elmera Azadpour"
+date: "11/12/2020"
+output: html_document
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+library(tidyverse)
+library(here)
+```
+
+### 1). Call in bonanza_hares.csv file
+```{r, error=FALSE, warning=FALSE, message=FALSE, echo=FALSE}
+hares <- read_csv(here("data","bonanza_hares.csv"))
+```
+
