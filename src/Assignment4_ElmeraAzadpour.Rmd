@@ -1,5 +1,5 @@
 ---
-title: "Assignment4_EA"
+title: "Assignment 4"
 author: "Elmera Azadpour"
 date: "11/12/2020"
 output: html_document
@@ -9,10 +9,144 @@ output: html_document
 knitr::opts_chunk$set(echo = TRUE)
 library(tidyverse)
 library(here)
+library(lubridate)
+library(chron)
+library(kableExtra)
+library(effsize)
 ```
 
-### 1). Call in bonanza_hares.csv file
+## 1. Call in bonanza_hares.csv file
 ```{r, error=FALSE, warning=FALSE, message=FALSE, echo=FALSE}
 hares <- read_csv(here("data","bonanza_hares.csv"))
+```
+
+### Introduction:
+dfdf
+
+
+### Data and analyses:
+asdasd
+
+## 2) Exploratory findings
+### Annual juvenille hare trap counts:
+```{r, fig.cap = "Figure 1. Annual juvenile hare trap counts (1999 - 2012)", error=FALSE, warning=FALSE, message=FALSE, echo=FALSE}
+## break up date using lubridate
+
+hares_juvinile <- hares %>% 
+  mutate(Date = mdy(date))%>% 
+  mutate(Year = year(Date)) %>% 
+  filter(age == "j") %>% 
+  group_by(Year) %>% 
+  count()
+
+ggplot(data = hares_juvinile,
+       aes(x=Year, y= n)) + 
+  geom_line(col= "red")  +
+  geom_point(col = "red") +
+  theme_minimal() +
+  labs(x= "Year", 
+       y='Count of hare trappings', 
+       title = "Annual juvenile hare trap counts (1999 - 2012)") +
+  scale_x_continuous(breaks=seq(1999, 2012, 2)) 
+
+mean(hares_juvinile$n)
+median(hares_juvinile$n)
+```
+#### Major takeaways from Figure 1: 
+The max count of juvenile hare trappings was 126 in 1999. The min count of juvenile hare trappings was 2 in 2010. The mean annual number of juvenile hares trapped was 31.5. The median annual number of juvenile hares trapped is 18.5. More generally, in more recent years (2005-2012), hare trapping have fluctuated quite a bit showing sharp increases followed by decreases. 
+
+## 3) Visualization of juvenile hare weights.
+```{r, fig.cap = "Figure 2. Mean juvenile hare weights by sex and site (1999 - 2012)", error=FALSE, warning=FALSE, message=FALSE, echo=FALSE}
+hares_weight <- hares %>% 
+  filter(age == "j") %>% 
+  select(c("grid", "sex", "weight")) 
+
+hares_weight$grid <- as.factor(hares_weight$grid)
+grid.labs <- c("Bonbs", "Bonbs", "Bonrip")
+names(grid.labs) <- c("bonbs", "bonmat", "bonrip")
+
+ggplot(hares_weight, 
+       aes(x=sex, y= weight)) +
+  geom_boxplot(aes(fill=sex)) +
+  facet_wrap(~grid, labeller = labeller(grid = grid.labs)) + 
+  theme_minimal() +
+  labs(x= "Sex", 
+       y='Weight (g)', 
+       title = "Juvenile hare weights by sex and site (1999 - 2012)") +
+  scale_x_discrete(labels= c("Female", "Male", "NA")) + 
+  scale_y_continuous(breaks=seq(0, 1700, 300)) +
+  theme(legend.position = "none")
+
+```
+#### Major takeaways from Figure 2
+This graph depictsjuvenile hare weight by sex across the three sites. Site bonbs has the max  weight for both male and female hares. In contrast, site bonrip has the lowest  weight of female and male hares. Additinally, this graph depicts the upper and lower quartiles of each sex at the differnt sites. This graph also includes NA values. 
+
+## 4) Juvenile weight comparison of male & female snowshoe hares
+```{r, error=FALSE, warning=FALSE, message=FALSE, echo=FALSE}
+hares_weight_mf <- hares %>% 
+  filter(age == "j") %>% 
+  select(c("grid", "sex", "weight")) %>% 
+  group_by(sex, grid) %>% 
+  summarise(mean_weight = mean(weight, na.rm=T), 
+            median_weight = median(weight, na.rm=T),
+            sd_weight = sd(weight, na.rm=T),
+            n = n())
+
+hares_weight_mf %>% 
+  kable(col.names = c("Sex","Site","Mean weight (g)",
+                      "Median weight (g)",
+                      "Standard deviation",
+                      "Sample size (n)")) %>% 
+  kable_styling(full_width = FALSE)
+```
+
+```{r,include = FALSE}
+# Histograms
+ggplot(data = hares_weight_mf, aes(x = mean_weight)) +
+  geom_histogram(bins = 10) +
+  facet_wrap(~sex, scales = "free")
+
+# QQ Plots
+ggplot(data= hares_weight_mf, aes(sample = mean_weight)) +
+  geom_qq() +
+  facet_wrap(~sex))
+
+# two sample t-test
+hares_weight_f <- hares_weight_mf %>% 
+  select(c("sex", "grid", "mean_weight")) %>% 
+  filter(sex == "f") %>% 
+  pull(mean_weight)
+
+hares_weight_m <- hares_weight_mf %>% 
+  select(c("sex", "grid", "mean_weight")) %>% 
+  filter(sex == "m") %>% 
+  pull(mean_weight)
+
+t.test(hares_weight_f, hares_weight_m)
+
+
+# cohens d/ effect size
+cohen.d(hares_weight_m, hares_weight_f)
+```
+#### Major takeaway from means comparison output:
+The actual difference in means from juvenile male and female snowshoe hares is 99.3572. The outcomes of the two sample t-test indicates there is a pretty decent chance  (30%) of randomly selecting two samples from populations with the same mean that are this different by chance. The cohend d (effect size) is 0.9879, a large effect size. 
+
+
+
+## 5) Examining relationship between juvenile weight & hind foot length.
+```{r, fig.cap = "Figure 3. Juvenile hare weights vs hind foot length from 1999 - 2012"}
+hares_hind <- hares %>% 
+  filter(age == "j") %>% 
+  select(c("weight", "hindft"))
+
+
+ggplot(hares_hind, 
+       aes(x=weight, y=hindft)) + 
+  geom_point() +
+  theme_minimal() +
+  labs(x= "Weight (g)", 
+       y='Hind foot length (mm)', 
+       title = "Juvenile hare weight vs. hind foot length (1999 - 2012)") + 
+  scale_x_continuous(breaks=seq(0, 1800, 400)) 
 ```
 
