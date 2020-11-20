@@ -25,6 +25,11 @@ hares <- read_csv(here("data","bonanza_hares.csv"))
 ```
 
 
+
+![Map of Bonza Creek Experimental Forest, interior Alaska USA (https://www.lter.uaf.edu/research/study-sites-overview) ](bonzacreekmap.png)
+
+
+
 ### Introduction:
 This mini exploratory report is on juvenile snowshoe hares in Bonanza Creek Experimental Forest (Long Term Ecological Research site). The Bonanza Creek LTER is a member of the U.S. LTER Network which is supported by the National Science Foundation and by the USDA Forest Service, Pacific Northwest Research Station. The Bonanza Creek Experimental Forest (BCEF) was established in 1963 is a 50 km^2^ experimental forest located approximately 20 km southwest of Fairbanks, Alaska and located on land owned by the State of Alaska. The Forest is within the Tanana Valley State Forest, a unit managed by the Division of Forestry, State of Alaska. This report covers analyses including: annual juvenile hare trap counts, comparison of juvenile hare weights by sex and site, juvenile weight comparison between male & female snowshoe hares, and an analysis of the relationship between juvenile snowshoe hare hind foot length. (information regarding teh Bonaza Creek LTER network was provided from https://www.lter.uaf.edu/research/study-sites-bcef)
 
