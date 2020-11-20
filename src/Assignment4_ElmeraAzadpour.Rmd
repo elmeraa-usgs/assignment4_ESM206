@@ -203,7 +203,9 @@ ggplot(data = hares_hind, aes(x = weight, y = hindft)) +
               fill = "gray10",
               alpha = 0.5) +
   theme_light() +
-  ggpubr::stat_regline_equation(label.x = 230, label.y = 160)
+  ggpubr::stat_regline_equation(label.x = 230, label.y = 160) +
+  labs(x= "Weight (g)", 
+       y='Hind foot length (mm)')
 ```
 
 #### Outcomes of linear regression:
